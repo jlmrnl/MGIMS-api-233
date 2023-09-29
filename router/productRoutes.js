@@ -38,8 +38,16 @@ router.get('/item/:productName', async (req, res) => {
 
 
 // POST /products
-router.post('/', async (req, res) => {
-    const product = new Product(req.body);
+const multer = require('multer'); // for handling file uploads
+const upload = multer({ dest: 'uploads/' }); // set the destination folder for uploaded files
+
+router.post('/add', upload.single('productImage'), async (req, res) => {
+    const product = new Product({
+        description: req.body.description,
+        number_of_stocks: req.body.number_of_stocks,
+        price: req.body.price,
+        image: req.file ? req.file.path : null // store the uploaded file path, or null if no file was uploaded
+    });
     try {
         const newProduct = await product.save();
         res.status(201).json(newProduct);
