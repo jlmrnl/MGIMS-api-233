@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const authRoutes = require("./router/auth");
 const productRoutes = require("./router/productRoutes");
+const supplierRoutes = require("./router/supplierRoutes");
 const cors = require("cors");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/product", productRoutes);
+app.use("/supplier", supplierRoutes)
 app.use("/uploads", express.static("uploads"));
 // Connect to MongoDB
 mongoose

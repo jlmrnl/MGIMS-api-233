@@ -7,6 +7,6 @@ const productSchema = new mongoose.Schema({
     image: String // Store the URL or path to the product image
 });
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema, "products");
 
 module.exports = Product;
