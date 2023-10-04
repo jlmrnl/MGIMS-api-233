@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /suppliers
-router.post('/', async (req, res) => {
+router.post('/add', async (req, res) => {
     try {
         const newSupplier = new Supplier(req.body);
         const savedSupplier = await newSupplier.save();
