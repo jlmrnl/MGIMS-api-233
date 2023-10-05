@@ -67,7 +67,7 @@ router.put('/update/:id', upload.single('staffImage'), async (req, res) => {
         let imagePath = null;
         if (req.file) {
             // Generate a relative path to the uploaded image
-            imagePath = `uploads/${req.file.filename}`;
+            imagePath = `uploads/staff/${req.file.filename}`;
         }
 
         // Update product information including the image path if a new file is uploaded
@@ -100,7 +100,7 @@ router.put('/updateImage/:id', upload.single('staffImage'), async (req, res) => 
         let imagePath = null;
         if (req.file) {
             // Generate a relative path to the uploaded image
-            imagePath = `uploads/${req.file.filename}`;
+            imagePath = `uploads/staff/${req.file.filename}`;
         }
 
         // Update product information including the image path if a new file is uploaded
