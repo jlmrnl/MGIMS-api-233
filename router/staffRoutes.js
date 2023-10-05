@@ -12,26 +12,87 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Route to create a new staff member
-router.post('/add', async (req, res) => {
-  const staffMember = new Staff({
-    staffName: req.body.staffName,
-    position: req.body.position,
-    totalSales: req.body.totalSales,
-    shift: req.body.shift,
-    contacts: {
-      email: req.body.contacts.email,
-      phoneNumber: req.body.contacts.phoneNumber
-    }
-  });
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
-  try {
-    const newStaffMember = await staffMember.save();
-    res.status(201).json(newStaffMember);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+// Multer configuration for handling file uploads
+const storage = multer.diskStorage({
+    destination: 'uploads/supplier/',
+    filename: function (req, file, cb) {
+        // Generate a unique filename with a random string and original file extension
+        const uniqueFileName = `${uuidv4()}${path.extname(file.originalname)}`;
+        cb(null, uniqueFileName);
+    }
 });
+
+const upload = multer({
+    storage: storage
+});
+
+// POST route for adding products
+router.post('/add', upload.single('staffImage'), async (req, res) => {
+    try {
+        // Check if a file was uploaded
+        if (!req.file) {
+            throw new Error('No image uploaded!');
+        }
+
+        // Generate a relative path to the uploaded image
+        const imagePath = `uploads/staff/${req.file.filename}`;
+
+        const staffMember = new Staff({
+            staffName: req.body.staffName,
+            position: req.body.position,
+            totalSales: req.body.totalSales,
+            shift: req.body.shift,
+            contacts: {
+              email: req.body.contacts.email,
+              phoneNumber: req.body.contacts.phoneNumber
+            },
+            image: imagePath
+          });
+
+        const newStaff = await staffMember.save();
+        res.status(201).json(newStaff);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// PUT /products/:id
+// router.put('/:id', upload.single('staffImage'), async (req, res) => {
+//     try {
+//         // Check if a new file is uploaded
+//         let imagePath = null;
+//         if (req.file) {
+//             // Generate a relative path to the uploaded image
+//             imagePath = `uploads/staff/${req.file.filename}`;
+//         }
+
+//         // Update product information including the image path if a new file is uploaded
+//         const updatedStaffData = ({
+//             staffName: req.body.staffName,
+//             position: req.body.position,
+//             totalSales: req.body.totalSales,
+//             shift: req.body.shift,
+//             contacts: {
+//                 email: req.body.contacts.email,
+//                 phoneNumber: req.body.contacts.phoneNumber
+//               },
+//             image: imagePath
+//           });
+
+//         if (imagePath) {
+//             updatedStaffData.image = imagePath;
+//         }
+
+//         const staff = await Staff.findByIdAndUpdate(req.params.id, updatedStaffData, { new: true });
+//         res.json(staff);
+//     } catch (err) {
+//         res.status(400).json({ message: err.message });
+//     }
+// });
 
 // Route to get a specific staff member by ID
 router.get('/:id', getStaffMember, (req, res) => {
@@ -55,7 +116,7 @@ async function getStaffMember(req, res, next) {
 }
 
 // Route to update a specific staff member by ID
-router.patch('/:id', getStaffMember, async (req, res) => {
+router.patch('/patch/:id', getStaffMember, async (req, res) => {
   if (req.body.staffName != null) {
     res.staffMember.staffName = req.body.staffName;
   }

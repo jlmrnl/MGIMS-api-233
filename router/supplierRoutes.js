@@ -70,27 +70,33 @@ router.post('/add', upload.single('supplierImage'), async (req, res) => {
     }
 });
 
-// PUT /suppliers/:id
-router.put('/:id', async (req, res) => {
+// PUT /products/:id
+router.put('/:id', upload.single('supplierImage'), async (req, res) => {
     try {
-        const updatedSupplier = await Supplier.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedSupplier);
+        // Check if a new file is uploaded
+        let imagePath = null;
+        if (req.file) {
+            // Generate a relative path to the uploaded image
+            imagePath = `uploads/${req.file.filename}`;
+        }
+
+        // Update product information including the image path if a new file is uploaded
+        const updatedSupplierData = ({
+            supplierName: req.body.supplierName,
+            business: req.body.business,
+            productsOffered: req.body.productsOffered,
+            scheduleOfSupply: req.body.scheduleOfSupply,
+            image: imagePath // store the generated relative path
+        });
+
+        if (imagePath) {
+            updatedSupplierData.image = imagePath;
+        }
+
+        const supplier = await Supplier.findByIdAndUpdate(req.params.id, updatedSupplierData, { new: true });
+        res.json(supplier);
     } catch (err) {
         res.status(400).json({ message: err.message });
-    }
-});
-
-// DELETE /suppliers/:id
-router.delete('/:id', async (req, res) => {
-    try {
-        const deletedSupplier = await Supplier.findByIdAndRemove(req.params.id);
-        if (deletedSupplier) {
-            res.json({ message: 'Supplier deleted successfully' });
-        } else {
-            res.status(404).json({ message: 'Supplier not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ message: err.message });
     }
 });
 

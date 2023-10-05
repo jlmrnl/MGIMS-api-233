@@ -31,7 +31,8 @@ const staffSchema = new mongoose.Schema({
   registrationDate: {
     type: Date,
     default: Date.now
-  }
+  },
+  image: String
 });
 
 staffSchema.virtual('totalTenure').get(function() {
