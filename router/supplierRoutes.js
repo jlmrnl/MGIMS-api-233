@@ -71,7 +71,7 @@ router.post('/add', upload.single('supplierImage'), async (req, res) => {
 });
 
 // PUT /products/:id
-router.put('/:id', upload.single('supplierImage'), async (req, res) => {
+router.put('/update/:id', upload.single('supplierImage'), async (req, res) => {
     try {
         // Check if a new file is uploaded
         let imagePath = null;

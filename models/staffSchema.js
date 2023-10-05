@@ -21,11 +21,11 @@ const staffSchema = new mongoose.Schema({
   contacts: {
     email: {
       type: String,
-      required: true
+      dafault: null
     },
     phoneNumber: {
       type: String,
-      required: true
+      default: null
     }
   },
   registrationDate: {
