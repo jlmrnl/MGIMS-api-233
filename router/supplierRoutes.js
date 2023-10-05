@@ -70,8 +70,18 @@ router.post('/add', upload.single('supplierImage'), async (req, res) => {
     }
 });
 
+// PUT /suppliers/:id
+router.put('/update/:id', async (req, res) => {
+    try {
+        const updatedSupplier = await Supplier.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedSupplier);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 // PUT /products/:id
-router.put('/update/:id', upload.single('supplierImage'), async (req, res) => {
+router.put('/updateImage/:id', upload.single('supplierImage'), async (req, res) => {
     try {
         // Check if a new file is uploaded
         let imagePath = null;
@@ -82,10 +92,6 @@ router.put('/update/:id', upload.single('supplierImage'), async (req, res) => {
 
         // Update product information including the image path if a new file is uploaded
         const updatedSupplierData = ({
-            supplierName: req.body.supplierName,
-            business: req.body.business,
-            productsOffered: req.body.productsOffered,
-            scheduleOfSupply: req.body.scheduleOfSupply,
             image: imagePath // store the generated relative path
         });
 
@@ -99,5 +105,6 @@ router.put('/update/:id', upload.single('supplierImage'), async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
+
 
 module.exports = router;

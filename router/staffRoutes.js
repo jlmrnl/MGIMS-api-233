@@ -67,7 +67,7 @@ router.put('/update/:id', upload.single('staffImage'), async (req, res) => {
         let imagePath = null;
         if (req.file) {
             // Generate a relative path to the uploaded image
-            imagePath = `uploads/staff/${req.file.filename}`;
+            imagePath = `uploads/${req.file.filename}`;
         }
 
         // Update product information including the image path if a new file is uploaded
@@ -77,8 +77,34 @@ router.put('/update/:id', upload.single('staffImage'), async (req, res) => {
             totalSales: req.body.totalSales,
             shift: req.body.shift,
             contacts: {
-                
-              },
+                email: req.body.contacts.email,
+                phoneNumber: req.body.contacts.phoneNumber
+              }
+          });
+
+        if (imagePath) {
+            updatedStaffData.image = imagePath;
+        }
+
+        const staff = await Staff.findByIdAndUpdate(req.params.id, updatedStaffData, { new: true });
+        res.json(staff);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// PUT /products/:id
+router.put('/updateImage/:id', upload.single('staffImage'), async (req, res) => {
+    try {
+        // Check if a new file is uploaded
+        let imagePath = null;
+        if (req.file) {
+            // Generate a relative path to the uploaded image
+            imagePath = `uploads/${req.file.filename}`;
+        }
+
+        // Update product information including the image path if a new file is uploaded
+        const updatedStaffData = ({
             image: imagePath
           });
 
