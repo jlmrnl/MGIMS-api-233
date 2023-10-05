@@ -21,7 +21,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-  
 
 // Register new user
 router.post('/signup', async (req, res) => {

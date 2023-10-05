@@ -18,7 +18,8 @@ const supplierSchema = new Schema({
     scheduleOfSupply: {
         type: String,
         default: null
-    }
+    },
+    image: String
 });
 
 const Supplier = mongoose.model('Supplier', supplierSchema);

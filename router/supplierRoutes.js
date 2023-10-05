@@ -26,12 +26,45 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST /suppliers
-router.post('/add', async (req, res) => {
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+// Multer configuration for handling file uploads
+const storage = multer.diskStorage({
+    destination: 'uploads/supplier/',
+    filename: function (req, file, cb) {
+        // Generate a unique filename with a random string and original file extension
+        const uniqueFileName = `${uuidv4()}${path.extname(file.originalname)}`;
+        cb(null, uniqueFileName);
+    }
+});
+
+const upload = multer({
+    storage: storage
+});
+
+// POST route for adding products
+router.post('/add', upload.single('supplierImage'), async (req, res) => {
     try {
-        const newSupplier = new Supplier(req.body);
-        const savedSupplier = await newSupplier.save();
-        res.status(201).json(savedSupplier);
+        // Check if a file was uploaded
+        if (!req.file) {
+            throw new Error('No image uploaded!');
+        }
+
+        // Generate a relative path to the uploaded image
+        const imagePath = `uploads/supplier/${req.file.filename}`;
+
+        const supplier = new Supplier({
+            supplierName: req.body.supplierName,
+            business: req.body.business,
+            productsOffered: req.body.productsOffered,
+            scheduleOfSupply: req.body.scheduleOfSupply,
+            image: imagePath // store the generated relative path
+        });
+
+        const newSupplier = await supplier.save();
+        res.status(201).json(newSupplier);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
