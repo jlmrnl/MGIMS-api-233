@@ -4,11 +4,11 @@ const invoiceSchema = new mongoose.Schema({
   products: [{
     productInfo: {
       type: String,
-      required: true
+      required: false
     },
     quantity: {
       type: Number,
-      required: true
+      required: false
     },
     discount: {
       type: Number,
@@ -16,7 +16,7 @@ const invoiceSchema = new mongoose.Schema({
     },
     amount: {
       type: Number,
-      required: true
+      required: false
     }
   }],
   subtotal: {
@@ -33,7 +33,7 @@ const invoiceSchema = new mongoose.Schema({
   },
   itemCount: {
     type: Number,
-    required: true
+    required: false
   },
   grandTotal: {
     type: Number,
