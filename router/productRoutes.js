@@ -1,12 +1,41 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/productSchema');
+const Invoice = require('../models/invoiceSchema');
 
 // GET /products
 router.get('/', async (req, res) => {
     try {
         const products = await Product.find();
         res.json(products);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+
+// POST /product/add-to-pos             POINT-OF-SALE POINT-OF-SALE POINT-OF-SALE POINT-OF-SALE POINT-OF-SALE POINT-OF-SALE POINT-OF-SALE 
+router.post('/add-to-pos', async (req, res) => {
+    try {
+        const { description, quantity, discount } = req.body;
+        const product = await Product.findOne({ description });
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        const amount = product.price * quantity - discount;
+
+        // Create POS entry
+        req.session.pos = req.session.pos || [];
+        req.session.pos.push({
+            productInfo: product.description,
+            quantity,
+            discount,
+            amount
+        });
+
+        res.json({ message: 'Product added to POS' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

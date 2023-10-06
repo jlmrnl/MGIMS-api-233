@@ -42,6 +42,16 @@ app.use("/supplier", supplierRoutes);
 app.use("/staff", staffRoutes);
 app.use("/user", staffUser);
 app.use("/uploads", express.static("uploads"));
+const posRoutes = require('./router/posRoutes');
+
+// Routes
+app.use('/auth', authRoutes);
+app.use('/product', productRoutes);
+app.use('/supplier', supplierRoutes);
+app.use('/staff', staffRoutes);
+app.use('/pos', posRoutes); // Include POS routes
+app.use('/user', staffUser);
+app.use('/uploads', express.static('uploads'));
 
 // Connect to MongoDB
 mongoose
