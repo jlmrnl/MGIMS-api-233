@@ -44,7 +44,7 @@ const upload = multer({
     storage: storage
 });
 
-// POST route for adding products
+// POST route for adding suppliers
 router.post('/add', upload.single('supplierImage'), async (req, res) => {
     try {
         // Check if a file was uploaded
