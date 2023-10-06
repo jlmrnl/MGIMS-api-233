@@ -66,10 +66,10 @@ router.post("/signup", async (req, res) => {
 // User login
 router.post("/login", async (req, res) => {
   try {
-    const { email, password, staffProfile } = req.body;
+    const { email, password} = req.body;
 
     const user = await User.findOne({ email });
-    const profile = await User.findOne({ staffProfile });
+    const staffProfile = await Staff.findOne({  })
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -85,7 +85,7 @@ router.post("/login", async (req, res) => {
     req.session.userId = user._id;
 
     // Send success response
-    res.json({ message: "Login successful" , profile});
+    res.json({ message: "Login successful" , staffProfile});
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
