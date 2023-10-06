@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Staff = require('../models/staffSchema');
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
@@ -21,10 +22,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// GET /auth/users
+router.get('/users', async (req, res) => {
+  try {
+      const users = await User.find();
+      res.json(users);
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
+
 // Register new user
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { staffProfile, email, password } = req.body;
 
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
@@ -37,6 +48,7 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
+      staffProfile, // Assuming staffProfile is a valid ObjectId referencing a Staff document
       email,
       password: hashedPassword,
     });
@@ -45,16 +57,19 @@ router.post("/signup", async (req, res) => {
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+
 // User login
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, staffProfile } = req.body;
 
     const user = await User.findOne({ email });
+    const profile = await User.findOne({ staffProfile });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -66,11 +81,35 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, jwtSecret, {
-      expiresIn: "1h",
-    });
+    // Set session data
+    req.session.userId = user._id;
 
-    res.json({ token });
+    // Send success response
+    res.json({ message: "Login successful", profile });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Profile page route
+router.get("/profile", async (req, res) => {
+  try {
+    // Retrieve user data based on session
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    // Fetch user data from the database using userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send the user data to the client
+    res.json({ profile: user });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });

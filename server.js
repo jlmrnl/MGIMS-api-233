@@ -6,6 +6,8 @@ const productRoutes = require("./router/productRoutes");
 const supplierRoutes = require("./router/supplierRoutes");
 const staffRoutes = require("./router/staffRoutes");
 const cors = require("cors");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const app = express();
 
@@ -16,11 +18,27 @@ require("dotenv").config();
 app.use(cors());
 app.use(bodyParser.json());
 
+// MongoDB session store
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: "sessions",
+});
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Replace with a secret key for session data encryption
+    resave: false,
+    saveUninitialized: true,
+    store: store,
+  })
+);
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/product", productRoutes);
-app.use("/supplier", supplierRoutes)
-app.use('/staff', staffRoutes);
+app.use("/supplier", supplierRoutes);
+app.use("/staff", staffRoutes);
 app.use("/uploads", express.static("uploads"));
 
 // Connect to MongoDB
@@ -31,13 +49,12 @@ mongoose
   })
   .then(() => {
     console.log("Connected to MongoDB");
+    // Start the server after MongoDB connection is established
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
   })
   .catch((err) => {
     console.error("Error connecting to MongoDB:", err.message);
   });
-
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
