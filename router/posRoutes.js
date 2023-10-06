@@ -18,12 +18,22 @@ router.delete('/void', (req, res) => {
 // Route to create a new invoice
 router.post('/create-invoice', async (req, res) => {
     try {
-      const { products, subtotal, itemDiscount, tax, itemCount, grandTotal, cash, change } = req.body;
+      const { products, cash } = req.body;
+  
+      // Calculate subtotal, itemDiscount, tax, itemCount, and grandTotal based on products
+      const subtotal = products.reduce((total, product) => total + product.amount, 0);
+      const itemDiscount = 0; // You can calculate item-level discount based on your business logic
+      const tax = subtotal * 0.02; // Assuming tax is 2% of the subtotal
+      const itemCount = products.length;
+      const grandTotal = subtotal - itemDiscount - tax;
+      
+      // Calculate change based on cash provided by the user
+      const change = cash - grandTotal;
   
       // Retrieve the staff ID from the user's session (assuming it's stored as userId)
       const staffId = req.session.userId;
   
-      // Create a new invoice with the staff ID automatically associated
+      // Create a new invoice with calculated values and the staff ID automatically associated
       const newInvoice = new Invoice({
         products,
         subtotal,
