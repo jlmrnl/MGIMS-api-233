@@ -187,8 +187,8 @@ router.patch("/patch/:id", getStaffMember, async (req, res) => {
 // Route to delete a specific staff member by ID
 router.delete("/:id", getStaffMember, async (req, res) => {
   try {
-    await res.staffMember.remove();
-    res.json({ message: "Staff member deleted" });
+    const staff = await Staff.findByIdAndRemove(req.params.id);
+    res.json({ message: "Staff deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
