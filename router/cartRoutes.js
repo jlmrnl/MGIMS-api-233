@@ -5,7 +5,7 @@ const Cart = require('../models/cartSchema');
     // GET /carts
     router.get("/", async (req, res) => {
         try {
-            const carts = await Cart.find();
+            const carts = await Cart.find().populate("cart");
             res.json(carts);
         } catch (err) {
             res.status(500).json({ message: err.message });
