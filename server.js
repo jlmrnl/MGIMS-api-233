@@ -6,6 +6,8 @@ const productRoutes = require("./router/productRoutes");
 const supplierRoutes = require("./router/supplierRoutes");
 const staffRoutes = require("./router/staffRoutes");
 const staffUser = require("./router/staffUser");
+const cartRoutes = require("./router/cartRoutes");
+const posRoutes = require('./router/posRoutes');
 const cors = require("cors");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -42,16 +44,8 @@ app.use("/supplier", supplierRoutes);
 app.use("/staff", staffRoutes);
 app.use("/user", staffUser);
 app.use("/uploads", express.static("uploads"));
-const posRoutes = require('./router/posRoutes');
-
-// Routes
-app.use('/auth', authRoutes);
-app.use('/product', productRoutes);
-app.use('/supplier', supplierRoutes);
-app.use('/staff', staffRoutes);
-app.use('/pos', posRoutes); // Include POS routes
-app.use('/user', staffUser);
-app.use('/uploads', express.static('uploads'));
+app.use('/pos', posRoutes);
+app.use('/cart', cartRoutes);
 
 // Connect to MongoDB
 mongoose
