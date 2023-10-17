@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const Staff = require('../models/staffSchema');
+const Staff = require("../models/staffSchema");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
@@ -23,12 +23,12 @@ const transporter = nodemailer.createTransport({
 });
 
 // GET /auth/users
-router.get('/users', async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
-      const users = await User.find().populate('staffProfile');
-      res.json(users);
+    const users = await User.find().populate("staffProfile");
+    res.json(users);
   } catch (err) {
-      res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -62,7 +62,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
 // User login
 router.post("/login", async (req, res) => {
   try {
@@ -81,7 +80,9 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate JWT token with an expiration of 8 hours (in seconds)
-    const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '8h' });
+    const token = jwt.sign({ userId: user._id }, "your_secret_key", {
+      expiresIn: "8h",
+    });
 
     const responseData = {
       message: "Login successful",
@@ -90,7 +91,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         profile: user.staffProfile,
       },
-      token: token // Include the token in the response
+      token: token, // Include the token in the response
     };
 
     // Send success response with token

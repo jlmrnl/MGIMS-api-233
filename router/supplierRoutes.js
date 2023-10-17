@@ -72,6 +72,31 @@ router.post("/add", upload.single("supplierImage"), async (req, res) => {
   }
 });
 
+router.post("/create", upload.single("supplierImage"), async (req, res) => {
+  try {
+    // Check if a file was uploaded
+    if (!req.file) {
+      throw new Error("No image uploaded!");
+    }
+
+    // Generate a relative path to the uploaded image
+    const imagePath = `uploads/supplier/${req.file.filename}`;
+
+    const supplier = new Supplier({
+      supplierName: req.body.supplierName,
+      business: req.body.business,
+      productsOffered: req.body.productsOffered,
+      scheduleOfSupply: req.body.scheduleOfSupply,
+      image: imagePath, // store the generated relative path
+    });
+
+    const newSupplier = await supplier.save();
+    res.status(201).json(newSupplier);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // PUT /suppliers/:id
 router.put("/update/:id", async (req, res) => {
   try {
